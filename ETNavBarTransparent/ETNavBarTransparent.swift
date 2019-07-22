@@ -101,6 +101,13 @@ extension UINavigationController {
         let toColor = toViewController?.navBarTintColor ?? .blue
         let newColor = averageColor(fromColor: fromColor, toColor: toColor, percent: percentComplete)
         navigationBar.tintColor = newColor
+        
+        //add barTintColor
+        let frombgColor = fromViewController?.navBar_BarTintColor ?? .white
+        let tobgColor = toViewController?.navBar_BarTintColor ?? .white
+        let newbgColor = averageColor(fromColor: frombgColor, toColor: tobgColor, percent: percentComplete)
+        navigationBar.barTintColor = newbgColor
+        
         et_updateInteractiveTransition(percentComplete)
     }
     
@@ -129,6 +136,7 @@ extension UINavigationController {
     @objc func et_popToViewController(_ viewController: UIViewController, animated: Bool) -> [UIViewController]? {
         setNeedsNavigationBackground(alpha: viewController.navBarBgAlpha)
         navigationBar.tintColor = viewController.navBarTintColor
+        navigationBar.barTintColor = viewController.navBar_BarTintColor //add
         return et_popToViewController(viewController, animated: animated)
     }
     
@@ -138,6 +146,7 @@ extension UINavigationController {
                 let popToVC = viewControllers[viewControllers.count - 2]
                 setNeedsNavigationBackground(alpha: popToVC.navBarBgAlpha)
                 navigationBar.tintColor = popToVC.navBarTintColor
+                navigationBar.barTintColor = popToVC.navBar_BarTintColor //add
             }
         }
         return et_popViewControllerAnimated(animated)
@@ -146,6 +155,7 @@ extension UINavigationController {
     @objc func et_popToRootViewControllerAnimated(_ animated: Bool) -> [UIViewController]? {
         setNeedsNavigationBackground(alpha: viewControllers.first?.navBarBgAlpha ?? 0)
         navigationBar.tintColor = viewControllers.first?.navBarTintColor
+        navigationBar.barTintColor = viewControllers.first?.navBar_BarTintColor
         return et_popToRootViewControllerAnimated(animated)
     }
     
@@ -229,6 +239,8 @@ extension UINavigationController: UINavigationBarDelegate {
             self.setNeedsNavigationBackground(alpha: nowAlpha)
             
             self.navigationBar.tintColor = context.viewController(forKey: $0)?.navBarTintColor
+            //add
+            self.navigationBar.barTintColor = context.viewController(forKey: $0)?.navBar_BarTintColor
         }
         
         if context.isCancelled {
@@ -250,6 +262,7 @@ extension UIViewController {
     fileprivate struct AssociatedKeys {
         static var navBarBgAlpha: CGFloat = 1.0
         static var navBarTintColor: UIColor = UIColor.defaultNavBarTintColor
+        static var navBar_BarTintColor:UIColor = .white
     }
     
     open var navBarBgAlpha: CGFloat {
@@ -281,6 +294,20 @@ extension UIViewController {
         set {
             navigationController?.navigationBar.tintColor = newValue
             objc_setAssociatedObject(self, &AssociatedKeys.navBarTintColor, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
+    //add
+    open var navBar_BarTintColor: UIColor {
+        get {
+            guard let tintColor = objc_getAssociatedObject(self, &AssociatedKeys.navBar_BarTintColor) as? UIColor else {
+                return .white
+            }
+            return tintColor
+            
+        }
+        set {
+            navigationController?.navigationBar.barTintColor = newValue
+            objc_setAssociatedObject(self, &AssociatedKeys.navBar_BarTintColor, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 }
