@@ -11,7 +11,7 @@ import UIKit
 extension UIColor {
     // System default bar tint color
     open class var defaultNavBarTintColor: UIColor {
-        return UIColor(red: 0, green: 0.478431, blue: 1, alpha: 1.0)
+        return UIColor(red: 0, green: 0, blue: 0, alpha: 1.0)
     }
 }
 
@@ -178,6 +178,9 @@ extension UINavigationController {
                 } else {
                     if let adaptiveBackdrop = valueForKey("_adaptiveBackdrop") as? UIView , let backdropEffectView = adaptiveBackdrop.value(forKey: "_backdropEffectView") as? UIView {
                         backdropEffectView.alpha = alpha
+                        for subView in barBackgroundView.subviews { //add
+                            subView.alpha = alpha
+                        }
                         return
                     }
                 }
@@ -230,6 +233,7 @@ extension UINavigationController: UINavigationBarDelegate {
     public func navigationBar(_ navigationBar: UINavigationBar, shouldPush item: UINavigationItem) -> Bool {
         setNeedsNavigationBackground(alpha: topViewController?.navBarBgAlpha ?? 0)
         navigationBar.tintColor = topViewController?.navBarTintColor
+        navigationBar.barTintColor = topViewController?.navBar_BarTintColor //add
         return true
     }
     
